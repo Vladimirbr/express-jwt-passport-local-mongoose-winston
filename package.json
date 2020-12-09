@@ -1,9 +1,9 @@
 {
-  "name": "auth-server",
-  "version": "0.0.0",
-  "description": "",
+  "name": "express-jwt-passport-local-mongoose-winston",
+  "version": "1.0.0",
+  "description": "Handling sample authorization in nodejs express server using jwt, passport, mongoose and mongodb",
   "main": "app.js",
-  "author": "",
+  "author": "Vladimirbr",
   "license": "ISC",
   "scripts": {
     "start": "node ./bin/start",
@@ -33,5 +33,9 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
     "nodemon": "^2.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vladimirbr/express-jwt-passport-local-mongoose-winston.git"
   }
 }
