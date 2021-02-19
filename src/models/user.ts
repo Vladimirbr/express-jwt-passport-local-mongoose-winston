@@ -1,7 +1,8 @@
-const mongoose = require("mongoose"),
-  Schema = mongoose.Schema;
+import { Schema, model } from "mongoose";
 
-const passportLocalMongoose = require("passport-local-mongoose");
+import passportLocalMongoose from "passport-local-mongoose";
+
+import { IUser } from "../interfaces/user";
 
 /**
  * User Schema
@@ -13,17 +14,16 @@ const userSchema = new Schema(
       required: true,
       unique: true,
       index: true,
+      trim: true,
     },
     password: {
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true } //add createdAt and updatedAt fields
 );
 
 // Hash and salt fields will be add by passportLocalMongoose plugin
 userSchema.plugin(passportLocalMongoose);
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+export default model<IUser>("User", userSchema);

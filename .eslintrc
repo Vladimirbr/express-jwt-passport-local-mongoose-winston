@@ -1,14 +1,30 @@
 {
-  "extends": "airbnb",
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "."
+  },
   "env": {
-    "node":true,
-    "mocha":true,
-    "es6": true
+    "node": true,
+    "mocha": true,
+    "es6": true,
+    "es2017": true
   },
   "rules": {
-    // disable requiring trailing commas
+    "no-console": "warn",
+    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "max-classes-per-file": ["error", 1],
+    "no-multiple-empty-lines": "error",
     "comma-dangle": 0,
-    "max-len": ["error", {"code": 120, "ignoreComments": true, "ignoreUrls": true, "ignoreStrings": true}],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }]
+    "max-len": ["error", { "code": 120, "ignoreComments": true, "ignoreUrls": true, "ignoreStrings": true }],
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "next" }]
   }
 }

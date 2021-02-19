@@ -2,7 +2,7 @@
 
 ## Sample Rest API for login and signup
 
-Handling sample authorization in nodejs express server using jwt, passport, mongoose and mongodb
+Handling sample authorization in nodejs express server using jwt, passport, mongoose and mongodb, typescript
 
 ## Requirements
 
@@ -13,10 +13,10 @@ You can find information about installation of nodejs on the [official Node.js w
 If the installation was successful, you should be able to run the following command.
 
     $ node --version
-    v12.18.3
+    v14.15.3
 
     $ npm --version
-    6.14.6
+    6.14.9
 
 If you need to update `npm`, you can use `npm`!
 

@@ -1,13 +1,17 @@
-const passportJWT = require("passport-jwt");
+import passportJWT from "passport-jwt";
 const LocalStrategy = require("passport-local").Strategy;
 
-const secretOrKey = require("../configs/config").jwt.secret;
-const User = require("../models/user");
+import { JWT_SECRET } from "../configs/env";
+import User from "../models/user";
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
-module.exports = (passport) => {
+module.exports = (passport: {
+  use: (arg0: passportJWT.Strategy) => void;
+  serializeUser: (arg0: any) => void;
+  deserializeUser: (arg0: any) => void;
+}) => {
   passport.use(
     new LocalStrategy(
       {
@@ -23,7 +27,7 @@ module.exports = (passport) => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: secretOrKey,
+        secretOrKey: JWT_SECRET,
       },
       async (jwtPayload, callback) => {
         //Find the user data in db.

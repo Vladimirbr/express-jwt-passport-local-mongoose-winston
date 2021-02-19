@@ -1,14 +1,13 @@
-const path = require("path");
+import path from "path";
 
 //Defining a custom logger
-const { createLogger, format, transports } = require("winston");
+import { createLogger, format, transports } from "winston";
 const { combine, splat, timestamp, printf, label, json, prettyPrint, colorize } = format;
 
-const loggerFolder = require("../configs/config").logger.folder;
-
+import { WINSTON_LOGGER_FOLDER } from "../configs/env";
 // Defining logger custom message format
 const myFormat = printf(({ level, message, label, timestamp, ...metadata }) => {
-  let msg = `${timestamp} [${label}] - [${level}] : ${message} `;
+  let msg: string = `${timestamp} [${label}] - [${level}] : ${message} `;
   if (metadata && Object.keys(metadata).length !== 0) {
     msg += JSON.stringify(metadata);
   }
@@ -20,9 +19,9 @@ const logger = createLogger({
   level: "debug",
   exitOnError: false,
   handleExceptions: true,
-  handleRejections: true,
+  //handleRejections: true,
   format: combine(
-    label({ label: "server_log" }),
+    label({ label: "auth_log" }),
     splat(),
     prettyPrint(),
     json(),
@@ -35,14 +34,14 @@ const logger = createLogger({
   transports: [
     new transports.Console({ format: colorize() }),
     new transports.File({
-      filename: path.join(loggerFolder, "combined.log"),
+      filename: path.join(WINSTON_LOGGER_FOLDER, "combined.log"),
       level: "info",
     }),
     new transports.File({
-      filename: path.join(loggerFolder, "errors.log"),
+      filename: path.join(WINSTON_LOGGER_FOLDER, "errors.log"),
       level: "error",
     }),
   ],
 });
 
-module.exports = logger;
+export default logger;
