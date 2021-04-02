@@ -5,7 +5,7 @@
 import container from "../configs/awilix";
 import { connectToDb } from "../db/connect";
 
-const logger = container.cradle.logger;
+const logger = <typeof container.cradle.logger>container.cradle.logger;
 
 export const preStart = async (): Promise<void> => {
   // Connect to mongo db

@@ -6,19 +6,20 @@ import { ILog } from "../../interfaces/log";
 
 class Logger implements ILog {
   private logger;
-  constructor({ loggerConfig }: { loggerConfig: any }) {
+
+  constructor({ loggerConfig }: { loggerConfig: { [key: string]: any } }) {
     this.logger = createLogger({
-      level: loggerConfig.MIN_LEVEL_CONSOLE,
-      exitOnError: loggerConfig.EXIT_ON_ERROR,
-      handleExceptions: loggerConfig.HANDLE_EXCEPTIONS,
+      level: <string>loggerConfig.MIN_LEVEL_CONSOLE,
+      exitOnError: <boolean>loggerConfig.EXIT_ON_ERROR,
+      handleExceptions: <boolean>loggerConfig.HANDLE_EXCEPTIONS,
       format: combine(
-        label({ label: loggerConfig.LABEL }),
+        label({ label: <string>loggerConfig.LABEL }),
         splat(),
         prettyPrint(),
         json(),
         format.simple(),
         timestamp({
-          format: loggerConfig.TIMESTAMP_FORMAT,
+          format: <string>loggerConfig.TIMESTAMP_FORMAT,
         }),
         this.myFormat
       ),

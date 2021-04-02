@@ -11,17 +11,13 @@ import { ILog } from "./interfaces/log";
 import app from "./app";
 
 export default class Server {
-  //private app;
-
   private server;
 
   private readonly port;
 
   private logger;
 
-  constructor({ serverConfig, logger }: { serverConfig: any; logger: ILog }) {
-    //this.app = app.app;
-
+  constructor({ serverConfig, logger }: { serverConfig: { [key: string]: any }; logger: ILog }) {
     this.logger = logger;
 
     /**
@@ -49,12 +45,12 @@ export default class Server {
     this.server.on("listening", this.onListening.bind(this));
   }
 
-  private onError(error: any): void {
+  private onError(error: { [key: string]: any }): void {
     if (error.syscall !== "listen") {
       throw error;
     }
 
-    let bind = typeof this.port === "string" ? "Pipe " + this.port : "Port" + this.port;
+    const bind = typeof this.port === "string" ? "Pipe " + this.port : "Port" + this.port;
 
     switch (error.code) {
       case "EACCES":

@@ -17,6 +17,7 @@ import "express-async-errors";
 import { getDurationInMilliseconds } from "./shared/functions";
 import container from "./configs/awilix";
 import { ILog } from "./interfaces/log";
+import passportStrategy from "./passport/passport";
 
 // Imports routes
 import indexRouter from "./routes/index";
@@ -24,7 +25,7 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 
 // Passport Config
-require("./passport/passport")(passport);
+passportStrategy(passport);
 
 const { BAD_REQUEST } = StatusCodes;
 
@@ -36,7 +37,7 @@ class App {
 
   constructor({ logger, serverConfig }: { logger: ILog; serverConfig: typeof container.cradle.serverConfig }) {
     this.logger = logger;
-    this.serverConfig = serverConfig;
+    this.serverConfig = <typeof container.cradle.serverConfig>serverConfig;
 
     this.app = express();
 

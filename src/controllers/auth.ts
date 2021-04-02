@@ -9,19 +9,19 @@ export default class Auth {
   private logger;
   private jwtConfig;
 
-  constructor({ jwtConfig, logger }: { jwtConfig: any; logger: ILog }) {
+  constructor({ jwtConfig, logger }: { jwtConfig: { [key: string]: any }; logger: ILog }) {
     this.logger = logger;
     this.jwtConfig = jwtConfig;
   }
 
-  register = async (req: Request, res: Response) => {
+  register = async (req: Request, res: Response): Promise<void> => {
     try {
       User.register(
         new User({
-          username: req.body.username,
+          username: <string>req.body.username,
         }),
-        req.body.password,
-        (registrationError: Error, user: any) => {
+        <string>req.body.password,
+        (registrationError: Error) => {
           if (registrationError) return res.status(500).json({ message: "User registration error" });
 
           passport.authenticate("local", {
@@ -32,18 +32,18 @@ export default class Auth {
         }
       );
     } catch (err) {
-      return res.status(500).json({ message: "User registration failed: " + err });
+      res.status(500).json({ message: "User registration failed: " + err });
     }
   };
 
-  login = async (req: Request, res: Response, next: NextFunction) => {
+  login = async (req: Request, res: Response) => {
     try {
       if (!req.body.username || !req.body.password) {
         return res.status(400).json({
           message: "Username or password is not correct",
         });
       }
-      passport.authenticate("local", { session: false }, (err, user, info) => {
+      passport.authenticate("local", { session: false }, (err, user) => {
         if (err || !user) {
           return res.status(400).json({
             message: "Something wrong with authentication",
@@ -54,9 +54,9 @@ export default class Auth {
           if (loginError) res.send(loginError);
 
           // generate a signed json web token with the contents of user object and return it in the response
-          const token = jwt.sign({ id: user.id, username: user.username }, this.jwtConfig.JWT_SECRET);
+          const token = jwt.sign({ id: <string>user.id, username: <string>user.username }, <string>this.jwtConfig.JWT_SECRET);
 
-          return res.json({ user: user.username, token, expiresIn: this.jwtConfig.JWT_TOKEN_TIME, id: user.id });
+          return res.json({ user: <string>user.username, token, expiresIn: this.jwtConfig.JWT_TOKEN_TIME, id: <string>user.id });
         });
       })(req, res);
     } catch (err) {
@@ -65,6 +65,3 @@ export default class Auth {
     }
   };
 }
-
-//const auth = new Auth();
-//export default auth;

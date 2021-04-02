@@ -1,9 +1,8 @@
-import { createContainer, asClass, asValue, asFunction, InjectionMode } from "awilix";
+import { createContainer, asClass, asValue, InjectionMode } from "awilix";
 
 import { nodeConfig, mongoConfig, serverConfig, loggerConfig, jwtConfig } from "./config";
 
 import Auth from "../controllers/auth";
-//import app from "../app";
 import Logger from "../shared/logger/logger";
 
 const container = createContainer({
@@ -19,7 +18,6 @@ container.register({
 });
 
 container.register({
-  // app: asFunction(app).singleton(),
   logger: asClass(Logger).singleton(),
   auth: asClass(Auth),
 });

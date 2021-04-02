@@ -1,21 +1,21 @@
 import passportJWT from "passport-jwt";
-const LocalStrategy = require("passport-local").Strategy;
+import { Strategy } from "passport-local";
 
 import container from "../configs/awilix";
 import User from "../models/user";
 
-const jwtConfig = container.cradle.jwtConfig;
+const jwtConfig = <typeof container.cradle.jwtConfig>container.cradle.jwtConfig;
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
-module.exports = (passport: {
+const passportStrategy = (passport: {
   use: (arg0: passportJWT.Strategy) => void;
   serializeUser: (arg0: any) => void;
   deserializeUser: (arg0: any) => void;
 }) => {
   passport.use(
-    new LocalStrategy(
+    new Strategy(
       {
         usernameField: "username",
         passwordField: "password",
@@ -28,8 +28,8 @@ module.exports = (passport: {
   passport.use(
     new JWTStrategy(
       {
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: jwtConfig.JWT_SECRET,
+        jwtFromRequest: <passportJWT.JwtFromRequestFunction>ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey: <string>jwtConfig.JWT_SECRET,
       },
       async (jwtPayload, callback) => {
         //Find the user data in db.
@@ -44,3 +44,5 @@ module.exports = (passport: {
     )
   );
 };
+
+export default passportStrategy;
