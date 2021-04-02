@@ -3,7 +3,7 @@
  */
 import compression from "compression";
 import cors from "cors";
-import express, { json, urlencoded } from "express";
+import express, { Application, Request, Response, NextFunction, json, urlencoded } from "express";
 import helmet from "helmet";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
@@ -11,13 +11,12 @@ import morgan from "morgan";
 import passport from "passport";
 import StatusCodes from "http-status-codes";
 
-import logger from "./logger/logger";
-import { getDurationInMilliseconds } from "./utils/utils";
-
-const { BAD_REQUEST } = StatusCodes;
-
 // ---> Module for catching all async errors!!!
 import "express-async-errors";
+
+import { getDurationInMilliseconds } from "./shared/functions";
+import container from "./configs/awilix";
+import { ILog } from "./interfaces/log";
 
 // Imports routes
 import indexRouter from "./routes/index";
@@ -27,67 +26,93 @@ import userRouter from "./routes/user";
 // Passport Config
 require("./passport/passport")(passport);
 
-// Create the Express application
-const app: express.Application = express();
+const { BAD_REQUEST } = StatusCodes;
 
-// Using the logger and its configured transports, to save the logs created by Morgan and combined with Winston logger
-const myStream = {
-  write: (text: string) => {
-    logger.info(text);
-  },
-};
-app.use(morgan("combined", { stream: myStream }));
+class App {
+  public app: Application;
 
-//Calculate req res time
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const start = process.hrtime();
+  private logger: ILog;
+  private serverConfig: typeof container.cradle.serverConfig;
 
-  res.on("finish", () => {
-    const durationInMilliseconds = getDurationInMilliseconds(start);
-    logger.log("debug", `[App] - ${req.method} ${req.originalUrl} [FINISHED] ${durationInMilliseconds.toLocaleString()} ms`);
-  });
+  constructor({ logger, serverConfig }: { logger: ILog; serverConfig: typeof container.cradle.serverConfig }) {
+    this.logger = logger;
+    this.serverConfig = serverConfig;
 
-  res.on("close", () => {
-    const durationInMilliseconds = getDurationInMilliseconds(start);
-    logger.log("debug", `[App] - ${req.method} ${req.originalUrl} [CLOSED] ${durationInMilliseconds.toLocaleString()} ms`);
-  });
+    this.app = express();
 
-  next();
-});
+    this.initMiddlewares();
+  }
 
-// Allows our other application to make HTTP requests to Express application
-app.use(cors());
+  initMiddlewares(): void {
+    // Using the logger and its configured transports, to save the logs created by Morgan and combined with Winston logger
+    this.app.use(
+      morgan("combined", {
+        stream: {
+          write: (text: string) => {
+            this.logger.info(text);
+          },
+        },
+      })
+    );
 
-// Secure your Express apps by setting various HTTP headers
-app.use(helmet());
-// Protect against HTTP Parameter Pollution attacks
-app.use(hpp());
+    //Calculate req res time
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      const start = process.hrtime();
 
-// Compress responses
-app.use(compression());
+      res.on("finish", () => {
+        const durationInMilliseconds = getDurationInMilliseconds(start);
+        this.logger.debug(`[App] - ${req.method} ${req.originalUrl} [FINISHED] ${durationInMilliseconds.toLocaleString()} ms`);
+      });
 
-// Allow express parse req url and json body
-app.use(json());
-app.use(urlencoded({ extended: false }));
+      res.on("close", () => {
+        const durationInMilliseconds = getDurationInMilliseconds(start);
+        this.logger.debug(`[App] - ${req.method} ${req.originalUrl} [CLOSED] ${durationInMilliseconds.toLocaleString()} ms`);
+      });
 
-app.use(mongoSanitize());
+      next();
+    });
 
-// This will initialize the passport object on every request
-app.use(passport.initialize());
+    // Allows our other application to make HTTP requests to Express application
+    this.app.use(cors());
 
-/**
- * -------------- ROUTES ----------------
- */
-app.use("/", indexRouter);
-app.use("/api/v1/auth", authRouter);
-// Every req to user route must be authenticated by jwt
-app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
+    // Secure your Express apps by setting various HTTP headers
+    this.app.use(helmet());
+    // Protect against HTTP Parameter Pollution attacks
+    this.app.use(hpp());
 
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  logger.error(`[App] - Error Handler - ${err}`);
-  return res.status(BAD_REQUEST).json({
-    error: err.message,
-  });
-});
+    // Compress responses
+    this.app.use(compression());
 
-export default app;
+    // Allow express parse req url and json body
+    this.app.use(json({ limit: this.serverConfig.BODY_JSON_LIMIT }));
+    this.app.use(
+      urlencoded({
+        extended: this.serverConfig.URL_EXTENDED,
+        parameterLimit: this.serverConfig.URL_PARAMETER_LIMIT,
+        limit: this.serverConfig.URL_LIMIT,
+      })
+    );
+
+    this.app.use(mongoSanitize());
+
+    // This will initialize the passport object on every request
+    this.app.use(passport.initialize());
+
+    /**
+     * -------------- ROUTES ----------------
+     */
+    this.app.use("/", indexRouter);
+    this.app.use("/api/v1/auth", authRouter);
+    // Every req to user route must be authenticated by jwt
+    this.app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
+
+    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      this.logger.error(`[App] - Error Handler - ${err}`);
+      return res.status(BAD_REQUEST).json({
+        error: err.message,
+      });
+    });
+  }
+}
+
+export default new App(container.cradle).app;

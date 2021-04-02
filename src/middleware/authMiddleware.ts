@@ -1,23 +1,26 @@
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 
-import { JWT_SECRET, JWT_TOKEN_TIME } from "../configs/env";
+import container from "../configs/awilix";
 
-export const generateToken = (req: any, res: any, next: any): void => {
+const jwtConfig = container.cradle.jwtConfig;
+
+export const generateToken = (req: any, res: Response, next: NextFunction): void => {
   req.token = req.token || {};
   req.token = jwt.sign(
     {
       id: req.user.id,
       username: req.user.username,
     },
-    JWT_SECRET,
+    jwtConfig.JWT_SECRET,
     {
-      expiresIn: JWT_TOKEN_TIME,
+      expiresIn: jwtConfig.JWT_TOKEN_TIME,
     }
   );
   next();
 };
 
-export const respond = (req: any, res: any): void => {
+export const respond = (req: any, res: Response): void => {
   res.status(200).json({
     user: req.user.username,
     token: req.token,

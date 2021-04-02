@@ -1,6 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
 
-import auth from "../controllers/auth";
+import container from "../configs/awilix";
+
+const auth = container.cradle.auth;
 
 const router = Router();
 

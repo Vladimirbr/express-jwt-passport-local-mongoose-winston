@@ -6,26 +6,28 @@
 
 import http from "http";
 
+import { ILog } from "./interfaces/log";
+
 import app from "./app";
-import logger from "./logger/logger";
-import { PORT } from "./configs/env";
 
-import { preStart } from "./pre-start/index";
+export default class Server {
+  //private app;
 
-class Server {
-  public server;
+  private server;
 
-  public port;
+  private readonly port;
 
-  public logger;
+  private logger;
 
-  constructor() {
+  constructor({ serverConfig, logger }: { serverConfig: any; logger: ILog }) {
+    //this.app = app.app;
+
     this.logger = logger;
 
     /**
      * Get port from environment and store in Express.
      */
-    this.port = this.normalizePort(PORT);
+    this.port = serverConfig.PORT;
 
     app.set("port", this.port);
 
@@ -38,32 +40,13 @@ class Server {
      * Listen on provided port, on all network interfaces.
      */
 
-    this.server.listen(this.port);
+    this.server.listen(this.port, serverConfig.HOST);
     /**
      *
      * Event listener for HTTP server "error" event.
      */
     this.server.on("error", this.onError);
     this.server.on("listening", this.onListening.bind(this));
-  }
-
-  /**
-   * Normalize a port into a number, string, or false.
-   */
-  private normalizePort(val: string): number | boolean | string {
-    const port = parseInt(val, 10);
-
-    if (Number.isNaN(port)) {
-      // named pipe
-      return val;
-    }
-
-    if (port >= 0) {
-      // port number
-      return port;
-    }
-
-    return false;
   }
 
   private onError(error: any): void {
@@ -88,15 +71,6 @@ class Server {
   }
 
   public onListening(): void {
-    this.logger.log("info", `[start] - Listening on ${JSON.stringify(this.server.address())}`);
+    this.logger.info(`[start] - Listening on ${JSON.stringify(this.server.address())}`);
   }
 }
-
-preStart()
-  .then(() => {
-    new Server();
-  })
-  .catch((e) => {
-    logger.log("info", `[start] - Failed on pre start ${e}`);
-    process.exit(1);
-  });

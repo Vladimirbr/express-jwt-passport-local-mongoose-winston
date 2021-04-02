@@ -1,8 +1,10 @@
 import passportJWT from "passport-jwt";
 const LocalStrategy = require("passport-local").Strategy;
 
-import { JWT_SECRET } from "../configs/env";
+import container from "../configs/awilix";
 import User from "../models/user";
+
+const jwtConfig = container.cradle.jwtConfig;
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
@@ -27,7 +29,7 @@ module.exports = (passport: {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: JWT_SECRET,
+        secretOrKey: jwtConfig.JWT_SECRET,
       },
       async (jwtPayload, callback) => {
         //Find the user data in db.

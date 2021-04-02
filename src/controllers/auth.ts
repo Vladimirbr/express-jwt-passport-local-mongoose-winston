@@ -2,11 +2,18 @@ import jwt from "jsonwebtoken";
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
 
-import logger from "../logger/logger";
 import User from "../models/user";
-import { JWT_SECRET, JWT_TOKEN_TIME } from "../configs/env";
 
-class Auth {
+import { ILog } from "../interfaces/log";
+export default class Auth {
+  private logger;
+  private jwtConfig;
+
+  constructor({ jwtConfig, logger }: { jwtConfig: any; logger: ILog }) {
+    this.logger = logger;
+    this.jwtConfig = jwtConfig;
+  }
+
   register = async (req: Request, res: Response) => {
     try {
       User.register(
@@ -47,17 +54,17 @@ class Auth {
           if (loginError) res.send(loginError);
 
           // generate a signed json web token with the contents of user object and return it in the response
-          const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
+          const token = jwt.sign({ id: user.id, username: user.username }, this.jwtConfig.JWT_SECRET);
 
-          return res.json({ user: user.username, token, expiresIn: JWT_TOKEN_TIME, id: user.id });
+          return res.json({ user: user.username, token, expiresIn: this.jwtConfig.JWT_TOKEN_TIME, id: user.id });
         });
       })(req, res);
     } catch (err) {
-      logger.log("error", "[auth.controller] - Login Error", err);
+      this.logger.error("[auth.controller] - Login Error", err);
       throw Error("Login Error");
     }
   };
 }
 
-const auth = new Auth();
-export default auth;
+//const auth = new Auth();
+//export default auth;
