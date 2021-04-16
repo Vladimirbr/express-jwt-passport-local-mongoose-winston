@@ -1,1 +1,1 @@
-export { default as getDurationInMilliseconds } from './getDurationInMilliseconds'
+export { default as getDurationInMilliseconds } from './getDurationInMilliseconds';

@@ -1,53 +1,53 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import container from "../configs/awilix";
+import container from '../configs/awilix';
 
 mongoose.Promise = global.Promise;
-mongoose.set("useFindAndModify", false);
+mongoose.set('useFindAndModify', false);
 
 const mongoConfig = <typeof container.cradle.mongoConfig>container.cradle.mongoConfig;
 const logger = <typeof container.cradle.logger>container.cradle.logger;
 
 // Create the database connection
 export const connectToDb = async (): Promise<void> => {
-  try {
-    await mongoose.connect(mongoConfig.MONGO_URI, {
-      useNewUrlParser: mongoConfig.USE_NEW_URL_PARSER,
-      useUnifiedTopology: mongoConfig.USE_UNIFIED_TOPOLOGY,
-      useCreateIndex: mongoConfig.USE_CREATE_INDEX,
-      poolSize: +mongoConfig.MONGO_POOL_SIZE,
-    });
-  } catch (err) {
-    logger.error("[DB connector] - Mongoose create the database connection error %s", err);
-    throw Error("Mongoose create the database connection error");
-  }
+	try {
+		await mongoose.connect(mongoConfig.MONGO_URI, {
+			useNewUrlParser: mongoConfig.USE_NEW_URL_PARSER,
+			useUnifiedTopology: mongoConfig.USE_UNIFIED_TOPOLOGY,
+			useCreateIndex: mongoConfig.USE_CREATE_INDEX,
+			poolSize: +mongoConfig.MONGO_POOL_SIZE,
+		});
+	} catch (err) {
+		logger.error('[DB connector] - Mongoose create the database connection error %s', err);
+		throw Error('Mongoose create the database connection error');
+	}
 };
 
 // CONNECTION EVENTS
 // When successfully connected
-mongoose.connection.on("connected", () => {
-  logger.info("[DB connector] - Mongoose default connection open to %s", mongoConfig.MONGO_URI);
+mongoose.connection.on('connected', () => {
+	logger.info('[DB connector] - Mongoose default connection open to %s', mongoConfig.MONGO_URI);
 });
 
 // If the connection throws an error
-mongoose.connection.on("error", (err) => {
-  logger.error("[DB connector] - Mongoose default connection error: %s", err);
+mongoose.connection.on('error', (err) => {
+	logger.error('[DB connector] - Mongoose default connection error: %s', err);
 });
 
 //When mongoose reconnected
-mongoose.connection.on("reconnected", () => {
-  logger.warn("[DB connector] - Mongoose Connection Reestablished");
+mongoose.connection.on('reconnected', () => {
+	logger.warn('[DB connector] - Mongoose Connection Reestablished');
 });
 
 // When the connection is disconnected
-mongoose.connection.on("disconnected", () => {
-  logger.info("[DB connector] - Mongoose default connection disconnected");
+mongoose.connection.on('disconnected', () => {
+	logger.info('[DB connector] - Mongoose default connection disconnected');
 });
 
 // If the Node process ends, close the Mongoose connection
-process.on("SIGINT", () => {
-  mongoose.connection.close(() => {
-    logger.warn("[DB connector] - Mongoose default connection disconnected through app termination");
-    process.exit(0);
-  });
+process.on('SIGINT', () => {
+	mongoose.connection.close(() => {
+		logger.warn('[DB connector] - Mongoose default connection disconnected through app termination');
+		process.exit(0);
+	});
 });

@@ -1,0 +1,4 @@
+{
+	"*.ts": ["npm run lint:write", "git add"],
+	"*.{json,md}": "prettier --write"
+}
