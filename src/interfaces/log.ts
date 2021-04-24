@@ -1,3 +1,6 @@
+/**
+ * Logger interface
+ */
 export interface ILog {
 	error(msg: string, ...data: any[]): void;
 	warn(msg: string, ...data: any[]): void;

@@ -132,8 +132,10 @@ class App {
 		// Every req to user route must be authenticated by jwt
 		this.app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
 
+		//Catch validation errors
 		this.app.use(errors());
 
+		//Error handler middleware
 		this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 			this.logger.error(`[App] - Error Handler - ${err}`);
 			return res.status(BAD_REQUEST).json({
