@@ -5,8 +5,8 @@ import container from '../configs/awilix';
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
 
-const mongoConfig = <typeof container.cradle.mongoConfig>container.cradle.mongoConfig;
-const logger = <typeof container.cradle.logger>container.cradle.logger;
+const mongoConfig = container.cradle.mongoConfig;
+const logger = container.cradle.logger;
 
 // Create the database connection
 export const connectToDb = async (): Promise<void> => {

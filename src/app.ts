@@ -53,7 +53,7 @@ class App {
 
 	constructor({ logger, serverConfig }: { logger: ILog; serverConfig: typeof container.cradle.serverConfig }) {
 		this.logger = logger;
-		this.serverConfig = <typeof container.cradle.serverConfig>serverConfig;
+		this.serverConfig = serverConfig;
 
 		this.app = express();
 

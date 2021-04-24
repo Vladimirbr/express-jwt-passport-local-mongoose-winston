@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 import User from '../models/user';
 
@@ -38,11 +38,6 @@ export default class Auth {
 
 	login = async (req: Request, res: Response) => {
 		try {
-			if (!req.body.username || !req.body.password) {
-				return res.status(400).json({
-					message: 'Username or password is not correct',
-				});
-			}
 			passport.authenticate('local', { session: false }, (err, user) => {
 				if (err || !user) {
 					return res.status(400).json({

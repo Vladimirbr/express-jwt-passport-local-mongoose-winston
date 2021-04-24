@@ -4,7 +4,7 @@ import { Strategy } from 'passport-local';
 import container from '../configs/awilix';
 import User from '../models/user';
 
-const jwtConfig = <typeof container.cradle.jwtConfig>container.cradle.jwtConfig;
+const jwtConfig = container.cradle.jwtConfig;
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
@@ -28,7 +28,7 @@ const passportStrategy = (passport: {
 	passport.use(
 		new JWTStrategy(
 			{
-				jwtFromRequest: <passportJWT.JwtFromRequestFunction>ExtractJWT.fromAuthHeaderAsBearerToken(),
+				jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
 				secretOrKey: <string>jwtConfig.JWT_SECRET,
 			},
 			async (jwtPayload, callback) => {

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import container from '../configs/awilix';
 
-const jwtConfig = <typeof container.cradle.jwtConfig>container.cradle.jwtConfig;
+const jwtConfig = container.cradle.jwtConfig;
 
 interface RequestWithTokenAndUser extends Request {
 	token: any;

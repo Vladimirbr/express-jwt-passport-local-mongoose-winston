@@ -1,6 +1,6 @@
 {
 	"name": "express-jwt-passport-local-mongoose-winston",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Handling sample authorization in nodejs express server using jwt, passport, mongoose and mongodb",
 	"main": "index.js",
 	"author": "Vladimir Brum",
