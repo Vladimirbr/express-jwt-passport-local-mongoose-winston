@@ -2,35 +2,30 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Request, Response } from 'express';
 
-import User from '../models/user';
-
 import { ILog } from '../interfaces/log';
+
 export default class Auth {
 	private logger;
 	private jwtConfig;
+	private queries;
 
-	constructor({ jwtConfig, logger }: { jwtConfig: { [key: string]: any }; logger: ILog }) {
+	constructor({ jwtConfig, queries, logger }: { jwtConfig: { [key: string]: any }; queries: any; logger: ILog }) {
 		this.logger = logger;
 		this.jwtConfig = jwtConfig;
+		this.queries = queries;
 	}
 
-	register = async (req: Request, res: Response): Promise<void> => {
+	register = async (req: Request, res: Response) => {
 		try {
-			User.register(
-				new User({
-					username: <string>req.body.username,
-				}),
-				<string>req.body.password,
-				(registrationError: Error) => {
-					if (registrationError) return res.status(500).json({ message: 'User registration error' });
+			const resp = await this.queries.register(req.body.username, req.body.password);
 
-					passport.authenticate('local', {
-						session: false,
-					})(req, res, () => {
-						res.status(200).json({ message: 'User registrated successfully' });
-					});
-				},
-			);
+			if (resp.errors) return res.status(500).json({ message: 'User registration error' });
+
+			await passport.authenticate('local', {
+				session: false,
+			});
+			//resp.toObject() for user entity
+			res.status(200).json({ message: 'User registrated successfully' });
 		} catch (err) {
 			res.status(500).json({ message: 'User registration failed: ' + err });
 		}

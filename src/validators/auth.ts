@@ -1,8 +1,6 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 
 export default class AuthValidator {
-	constructor() {}
-
 	public loginValidator = celebrate({
 		[Segments.BODY]: Joi.object()
 			.keys({

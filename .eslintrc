@@ -11,6 +11,7 @@
 	],
 	"parserOptions": {
 		"project": "tsconfig.json",
+		"sourceType": "module",
 		"tsconfigRootDir": "."
 	},
 	"env": {
@@ -34,11 +35,18 @@
 		"no-alert": "error",
 		"prefer-destructuring": "off",
 		"no-duplicate-imports": ["error", { "includeExports": true }],
-		"prettier/prettier": ["error"],
 		"max-classes-per-file": ["error", 1],
 		"no-multiple-empty-lines": "error",
 		"comma-dangle": 0,
 		"max-len": ["error", { "code": 140, "ignoreComments": true, "ignoreUrls": true, "ignoreStrings": true }],
-		"no-unused-vars": ["warn", { "argsIgnorePattern": "next" }]
+		"no-unused-vars": ["warn", { "argsIgnorePattern": "next" }],
+		"@typescript-eslint/restrict-template-expressions": ["warn", { "allowNumber": true, "allowNullish": true, "allowAny": true }],
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/unbound-method": [
+			"error",
+			{
+				"ignoreStatic": true
+			}
+		]
 	}
 }

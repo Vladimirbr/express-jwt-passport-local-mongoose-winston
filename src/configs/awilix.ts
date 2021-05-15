@@ -5,6 +5,7 @@ import { nodeConfig, mongoConfig, serverConfig, loggerConfig, jwtConfig } from '
 import Auth from '../controllers/auth';
 import Logger from '../shared/logger/logger';
 import AuthValidator from '../validators/auth';
+import Queries from '../db/queries';
 
 const container = createContainer({
 	injectionMode: InjectionMode.PROXY,
@@ -22,6 +23,7 @@ container.register({
 	logger: asClass(Logger).singleton(),
 	auth: asClass(Auth),
 	authValidator: asClass(AuthValidator),
+	queries: asClass(Queries).singleton(),
 });
 
 export default container;

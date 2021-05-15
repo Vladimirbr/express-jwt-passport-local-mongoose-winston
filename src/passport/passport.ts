@@ -2,9 +2,8 @@ import passportJWT from 'passport-jwt';
 import { Strategy } from 'passport-local';
 
 import container from '../configs/awilix';
-import User from '../models/user';
 
-const jwtConfig = container.cradle.jwtConfig;
+const { jwtConfig, queries } = container.cradle;
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
@@ -20,11 +19,11 @@ const passportStrategy = (passport: {
 				usernameField: 'username',
 				passwordField: 'password',
 			},
-			User.authenticate(),
+			queries.authenticateUser(),
 		),
 	);
-	passport.serializeUser(User.serializeUser());
-	passport.deserializeUser(User.deserializeUser());
+	passport.serializeUser(queries.serializeUser());
+	passport.deserializeUser(queries.deserializeUser());
 	passport.use(
 		new JWTStrategy(
 			{
@@ -34,7 +33,7 @@ const passportStrategy = (passport: {
 			async (jwtPayload, callback) => {
 				//Find the user data in db.
 				try {
-					const user = await User.findById(jwtPayload.id);
+					const user = await queries.findById(jwtPayload.id);
 
 					return callback(null, user);
 				} catch (findUserError) {

@@ -23,7 +23,7 @@ export default class Server {
 		/**
 		 * Get port from environment and store in Express.
 		 */
-		this.port = serverConfig.PORT;
+		this.port = <string>serverConfig.PORT;
 
 		app.set('port', this.port);
 
@@ -50,7 +50,7 @@ export default class Server {
 			throw error;
 		}
 
-		const bind = typeof this.port === 'string' ? 'Pipe ' + this.port : 'Port' + this.port;
+		const bind = typeof this.port === 'string' ? `Pipe ${this.port} ` : `Port ${this.port}`;
 
 		switch (error.code) {
 			case 'EACCES':
