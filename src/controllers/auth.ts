@@ -15,19 +15,21 @@ export default class Auth {
 		this.queries = queries;
 	}
 
-	register = async (req: Request, res: Response) => {
+	register = async (data: any) => {
 		try {
-			const resp = await this.queries.register(req.body.username, req.body.password);
+			const resp = await this.queries.register(data.username, data.password);
 
-			if (resp.errors) return res.status(500).json({ message: 'User registration error' });
+			if (!resp.toObject()) {
+				throw 'User registration error';
+			}
 
-			await passport.authenticate('local', {
+			const t = await passport.authenticate('local', {
 				session: false,
 			});
-			//resp.toObject() for user entity
-			res.status(200).json({ message: 'User registrated successfully' });
+
+			return 'User registrated successfully';
 		} catch (err) {
-			res.status(500).json({ message: 'User registration failed: ' + err });
+			throw err;
 		}
 	};
 
